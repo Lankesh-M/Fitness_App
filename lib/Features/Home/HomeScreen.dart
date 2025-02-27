@@ -38,28 +38,26 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: const Text("Hello, User"),
-        bottom: TabBar(
-          controller: _tabController, // Connect TabBar to TabController
-          indicatorColor: Colors.green,
-          indicatorWeight: 10,
-          labelColor: Colors.green,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          tabs: const [
-            Tab(
-              // icon: Icon(Icons.fitness_center_outlined, size: 25),
-              child: Text('Real Life'),
-            ),
-            Tab(
-              // icon: Icon(Icons.play_arrow_outlined, size: 25),
-              child: Text('Game Life'),
-            ),
-          ],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController, // Connect TabBarView to TabController
-        children: const [WorkoutQuestPage(), GameProfilePage()],
-      ),
+      //   bottom: TabBar(
+      //     controller: _tabController, // Connect TabBar to TabController
+      //     indicatorColor: Colors.green,
+      //     indicatorWeight: 10,
+      //     labelColor: Colors.green,
+      //     labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+      //     tabs: const [
+      //       Tab(
+      //         // icon: Icon(Icons.fitness_center_outlined, size: 25),
+      //         child: Text('Real Life'),
+      //       ),
+      //       Tab(
+      //         // icon: Icon(Icons.play_arrow_outlined, size: 25),
+      //         child: Text('Game Life'),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      body: const WorkoutQuestPage(),
     );
   }
 }

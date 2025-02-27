@@ -23,7 +23,7 @@ class _HabitFormPageState extends State<HabitFormPage> {
   TrackingCategory _trackingCategory = TrackingCategory.daily;
   List<bool> _daysToTrack = List.filled(7, true);
   TimeOfDay? _reminderTime;
-  String _iconName = 'bookmark';
+  IconData _iconName = Icons.bookmark;
   Color _selectedColor = Colors.blue;
 
   final List<Color> _colorOptions = [
@@ -52,23 +52,23 @@ class _HabitFormPageState extends State<HabitFormPage> {
     {'name': 'book', 'label': 'Book'},
     {'name': 'directions_run', 'label': 'Running'},
     {'name': 'fitness_center', 'label': 'Fitness'},
+    {'name': 'health_and_safety', 'label': 'Health'},
     {'name': 'code', 'label': 'Code'},
-    {'name': 'local_cafe', 'label': 'Drink Water'},
     {'name': 'self_improvement', 'label': 'Meditation'},
-    {'name': 'alarm', 'label': 'Wake Up'},
-    {'name': 'smoke_free', 'label': 'No Smoking'},
-    {'name': 'phone_android', 'label': 'Less Phone'},
+    {'name': 'alarm', 'label': 'Alarm'},
+    {'name': 'smoke_free', 'label': 'No Drugs'},
+    {'name': 'phone_android', 'label': 'Phone'},
     {'name': 'brush', 'label': 'Art'},
     {'name': 'music_note', 'label': 'Music'},
-    {'name': 'restaurant', 'label': 'Healthy Eating'},
+    {'name': 'restaurant', 'label': 'Diet'},
     {'name': 'create', 'label': 'Journal'},
-    {'name': 'pets', 'label': 'Pet Care'},
     {'name': 'bookmark', 'label': 'General'},
   ];
 
   final Map<String, IconData> IconsMap = {
     'book': Icons.book,
     'directions_run': Icons.directions_run,
+    'health_and_safety': Icons.health_and_safety,
     'fitness_center': Icons.fitness_center,
     'code': Icons.code,
     'local_cafe': Icons.local_cafe,
@@ -100,7 +100,7 @@ class _HabitFormPageState extends State<HabitFormPage> {
       _trackingCategory = widget.habit!.trackingCategory;
       _daysToTrack = List.from(widget.habit!.daysToTrack);
       _reminderTime = widget.habit!.reminderTime;
-      _iconName = widget.habit!.iconName;
+      _iconName = widget.habit!.icon;
       _selectedColor = widget.habit!.color;
     }
   }
@@ -202,14 +202,7 @@ class _HabitFormPageState extends State<HabitFormPage> {
                           value: TrackingCategory.daily,
                           child: Text('Daily (Streak)'),
                         ),
-                        DropdownMenuItem(
-                          value: TrackingCategory.weekly,
-                          child: Text('Weekly'),
-                        ),
-                        DropdownMenuItem(
-                          value: TrackingCategory.monthly,
-                          child: Text('Monthly'),
-                        ),
+
                         DropdownMenuItem(
                           value: TrackingCategory.custom,
                           child: Text('Custom Days'),
@@ -398,11 +391,11 @@ class _HabitFormPageState extends State<HabitFormPage> {
                       children:
                           _iconOptions.map((option) {
                             var iconData = IconsMap[option['name']]!;
-                            final isSelected = _iconName == option['name'];
+                            final isSelected = _iconName == iconData;
                             return InkWell(
                               onTap: () {
                                 setState(() {
-                                  _iconName = option['name']!;
+                                  _iconName = iconData;
                                 });
                               },
                               child: Container(
@@ -544,7 +537,7 @@ class _HabitFormPageState extends State<HabitFormPage> {
         reminderTime: _reminderTime,
         startDate: widget.habit?.startDate,
         completedDates: widget.habit?.completedDates,
-        iconName: _iconName,
+        iconCodePoint: _iconName.codePoint, //Todo : change here
         color: _selectedColor,
       );
 

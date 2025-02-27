@@ -8,14 +8,14 @@ import 'HabitModel.dart';
 import "HabitProvider.dart";
 import "HabitSettingScreen.dart";
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HabitTrackerScreen extends StatefulWidget {
+  const HabitTrackerScreen({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HabitTrackerScreenState createState() => _HabitTrackerScreenState();
 }
 
-class _HomePageState extends State<HomePage>
+class _HabitTrackerScreenState extends State<HabitTrackerScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _showCompletedHabits = true;
@@ -213,10 +213,7 @@ class _HomePageState extends State<HomePage>
     final isCompleted = habit.isCompletedToday;
 
     // Get material icon from icon name
-    final IconData iconData = IconData(
-      Icons.book.codePoint,
-      fontFamily: 'MaterialIcons',
-    );
+    final IconData iconData = habit.icon;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -446,10 +443,6 @@ class _HomePageState extends State<HomePage>
     switch (category) {
       case TrackingCategory.daily:
         return 'Daily';
-      case TrackingCategory.weekly:
-        return 'Weekly';
-      case TrackingCategory.monthly:
-        return 'Monthly';
       case TrackingCategory.custom:
         return 'Custom Days';
     }
@@ -534,31 +527,30 @@ class _HomePageState extends State<HomePage>
                 Navigator.of(context).pop();
               },
             ),
-            // FilledButton(
-            //   child: const Text('DELETE'),
-            //   onPressed: () {
-            //     Provider.of<HabitProvider>(
-            //       context,
-            //       listen: false,
-            //     ).deleteHabit(habit.id);
-            //     Navigator.of(context).pop();
-            //     ScaffoldMessenger.of(context).showSnackBar(
-            //       SnackBar(
-            //         content: Text('${habit.title} has been deleted'),
-            //         behavior: SnackBarBehavior.floating,
-            //         action: SnackBarAction(
-            //           label: 'UNDO',
-            //           onPressed: () {
-            //             Provider.of<HabitProvider>(
-            //               context,
-            //               listen: false,
-            //             ).restoreHabit();
-            //           },
-            //         ),
-            //       ),
-            //     );
-            //   },
-            // ),
+            FilledButton(
+              child: const Text('DELETE'),
+              onPressed: () {
+                Provider.of<HabitProvider>(
+                  context,
+                  listen: false,
+                ).deleteHabit(habit.id);
+                Navigator.of(context).pop();
+              },
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text('${habit.title} has been deleted'),
+              //     behavior: SnackBarBehavior.floating,
+              //     action: SnackBarAction(
+              //       label: 'UNDO',
+              //       onPressed: () {
+              //         Provider.of<HabitProvider>(
+              //           context,
+              //           listen: false,
+              //         ).restoreHabit();
+              //       },
+              //     ),
+              //   ),
+            ),
           ],
         );
       },

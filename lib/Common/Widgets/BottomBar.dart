@@ -21,7 +21,7 @@ class _BottomBarState extends State<BottomBar> {
   final List<Widget> pages = [
     const HomeScreen(), //0
     // const DailyScreen(), //1
-    const HomePage(),
+    const HabitTrackerScreen(),
     const ProgressScreen(), //2
     const ProfileScreen(), //3
   ];

@@ -5,10 +5,11 @@ import 'package:uuid/uuid.dart';
 enum HabitNature { positive, negative }
 
 // Enum to define the tracking frequency
-enum TrackingCategory { daily, weekly, monthly, custom }
+enum TrackingCategory { daily, custom }
 
 // Class to represent a single habit
 class Habit {
+  // Defining class variable properites
   final String id;
   final String title;
   final HabitNature nature;
@@ -19,7 +20,7 @@ class Habit {
   final TimeOfDay? reminderTime;
   final DateTime startDate;
   final List<DateTime> completedDates;
-  final String iconName;
+  final int iconCodePoint; // Storing IconData as an integer
   final Color color;
 
   // Constructor with required and optional parameters
@@ -34,11 +35,22 @@ class Habit {
     this.reminderTime,
     DateTime? startDate,
     List<DateTime>? completedDates,
-    this.iconName = 'bookmark',
+    required this.iconCodePoint, // Now stores IconData's codePoint
     this.color = Colors.blue,
   }) : id = id ?? const Uuid().v4(),
        startDate = startDate ?? DateTime.now(),
        completedDates = completedDates ?? [];
+
+  factory Habit.empty() {
+    return Habit(
+      id: '',
+      title: '',
+      nature: HabitNature.positive,
+      trackingCategory: TrackingCategory.daily,
+      iconCodePoint: Icons.bookmark.codePoint,
+      targetDays: 0,
+    );
+  }
 
   // Get current streak for daily habits
   int get currentStreak {
@@ -131,11 +143,11 @@ class Habit {
     int? targetDays,
     String? notes,
     TimeOfDay? reminderTime,
-    String? iconName,
+    IconData? icon,
     Color? color,
   }) {
     return Habit(
-      id: this.id,
+      id: id,
       title: title ?? this.title,
       nature: nature ?? this.nature,
       trackingCategory: trackingCategory ?? this.trackingCategory,
@@ -143,9 +155,9 @@ class Habit {
       targetDays: targetDays ?? this.targetDays,
       notes: notes ?? this.notes,
       reminderTime: reminderTime ?? this.reminderTime,
-      startDate: this.startDate,
-      completedDates: this.completedDates,
-      iconName: iconName ?? this.iconName,
+      startDate: startDate,
+      completedDates: completedDates,
+      iconCodePoint: iconCodePoint,
       color: color ?? this.color,
     );
   }
@@ -167,7 +179,7 @@ class Habit {
       reminderTime: reminderTime,
       startDate: startDate,
       completedDates: newCompletedDates,
-      iconName: iconName,
+      iconCodePoint: iconCodePoint,
       color: color,
     );
   }
@@ -189,10 +201,13 @@ class Habit {
       reminderTime: reminderTime,
       startDate: startDate,
       completedDates: newCompletedDates,
-      iconName: iconName,
+      iconCodePoint: iconCodePoint,
       color: color,
     );
   }
+
+  // Retrieve IconData from codePoint
+  IconData get icon => IconData(iconCodePoint, fontFamily: 'MaterialIcons');
 
   // Convert Habit to Map for storage
   Map<String, dynamic> toMap() {
@@ -211,7 +226,7 @@ class Habit {
       'startDate': startDate.millisecondsSinceEpoch,
       'completedDates':
           completedDates.map((date) => date.millisecondsSinceEpoch).toList(),
-      'iconName': iconName,
+      'iconCodePoint': iconCodePoint, // Store as integer
       'color': color.value,
     };
   }
@@ -243,11 +258,12 @@ class Habit {
                 (timestamp) => DateTime.fromMillisecondsSinceEpoch(timestamp),
               )
               .toList(),
-      iconName: map['iconName'],
+      iconCodePoint: map['iconCodePoint'], // Retrieve integer
       color: Color(map['color']),
     );
   }
 }
+// Convert iconCodePoint back to IconData when needed
 
 // Predefined habits for quick selection
 class PredefinedHabits {
@@ -258,7 +274,8 @@ class PredefinedHabits {
         nature: HabitNature.positive,
         trackingCategory: TrackingCategory.daily,
         targetDays: 30,
-        iconName: 'book',
+        notes: "Start reading atleast 10 pages every day",
+        iconCodePoint: Icons.book.codePoint,
         color: Colors.amber,
       ),
       Habit(
@@ -267,7 +284,7 @@ class PredefinedHabits {
         trackingCategory: TrackingCategory.daily,
         targetDays: 30,
         notes: 'Wake up before 6 AM',
-        iconName: 'alarm',
+        iconCodePoint: Icons.alarm.codePoint,
         color: Colors.red,
       ),
       Habit(
@@ -284,7 +301,8 @@ class PredefinedHabits {
           false,
         ], // Mon, Wed, Fri
         targetDays: 12,
-        iconName: 'directions_run',
+        notes: "Running improves your Cardiovascular Health",
+        iconCodePoint: Icons.directions_run.codePoint,
         color: Colors.green,
       ),
       Habit(
@@ -292,15 +310,35 @@ class PredefinedHabits {
         nature: HabitNature.positive,
         trackingCategory: TrackingCategory.daily,
         targetDays: 100,
-        iconName: 'code',
+        notes: "Consistency is the Key to Success",
+        iconCodePoint: Icons.code.codePoint,
         color: Colors.blue,
       ),
       Habit(
-        title: 'No Smoking',
+        title: 'Protein Intake',
+        nature: HabitNature.positive,
+        trackingCategory: TrackingCategory.daily,
+        targetDays: 90,
+        notes: "Eat protein rich foods",
+        iconCodePoint: Icons.fitness_center.codePoint,
+        color: Colors.blue,
+      ),
+      Habit(
+        title: 'Drink More Water',
+        nature: HabitNature.positive,
+        trackingCategory: TrackingCategory.daily,
+        targetDays: 30,
+        notes: "Drink Minimum 4 litres of water every day",
+        iconCodePoint: Icons.local_cafe.codePoint,
+        color: Colors.lightBlue,
+      ),
+      Habit(
+        title: 'No Drugs',
         nature: HabitNature.negative,
         trackingCategory: TrackingCategory.daily,
         targetDays: 90,
-        iconName: 'smoke_free',
+        notes: "Smoking is injurious to Health",
+        iconCodePoint: Icons.smoke_free.codePoint,
         color: Colors.purple,
       ),
       Habit(
@@ -308,9 +346,12 @@ class PredefinedHabits {
         nature: HabitNature.positive,
         trackingCategory: TrackingCategory.daily,
         targetDays: 21,
-        iconName: 'self_improvement',
+        notes: "Medidate atleast 10 mins a day",
+        iconCodePoint: Icons.self_improvement.codePoint,
         color: Colors.teal,
       ),
     ];
   }
 }
+
+// factory Habit.empty() => Habit(id: '', title: '', nature: HabitNature.positive, ...);

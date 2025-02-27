@@ -1,13 +1,20 @@
 import 'package:fitgame_app/Features/HabitTracker/HabitModel.dart';
 import 'package:fitgame_app/Features/HabitTracker/HabitProvider.dart';
+import 'package:fitgame_app/Features/HabitTracker/HabitSettingScreen.dart';
+import 'package:fitgame_app/Features/HabitTracker/HabitTrackerScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class CommonHabitsPage extends StatelessWidget {
+class CommonHabitsPage extends StatefulWidget {
   // Constructor
   const CommonHabitsPage({Key? key}) : super(key: key);
 
+  @override
+  State<CommonHabitsPage> createState() => _CommonHabitsPageState();
+}
+
+class _CommonHabitsPageState extends State<CommonHabitsPage> {
   @override
   Widget build(BuildContext context) {
     // Get the list of predefined habits from our utility class
@@ -102,8 +109,8 @@ class CommonHabitsPage extends StatelessWidget {
       };
 
       // Look up the icon in our map
-      if (iconMap.containsKey(habit.iconName)) {
-        iconData = iconMap[habit.iconName]!;
+      if (iconMap.containsKey(habit.icon)) {
+        iconData = iconMap[habit.icon]!;
       }
     } catch (e) {
       // Fallback to default icon if lookup fails
@@ -270,10 +277,6 @@ class CommonHabitsPage extends StatelessWidget {
     switch (habit.trackingCategory) {
       case TrackingCategory.daily:
         return 'Every day';
-      case TrackingCategory.weekly:
-        return 'Weekly';
-      case TrackingCategory.monthly:
-        return 'Monthly';
       case TrackingCategory.custom:
         // For custom, show which days are tracked
         final days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -384,9 +387,23 @@ class CommonHabitsPage extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () {
+                  //Rerender the page
                   Navigator.pop(context);
                 },
                 child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  // Add the habit to the provider and Customize acc to user needs
+                  _addHabitToProvider(context, habit, provider);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HabitFormPage(habit: habit),
+                    ),
+                  );
+                },
+                child: const Text('Customize'),
               ),
               FilledButton(
                 onPressed: () {
@@ -420,8 +437,13 @@ class CommonHabitsPage extends StatelessWidget {
         action: SnackBarAction(
           label: 'View Habits',
           onPressed: () {
-            // Navigate back to the main habits list
             Navigator.pop(context);
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => HabitTrackerScreen(), //Changed here
+            //   ),
+            // );
           },
         ),
       ),
@@ -478,14 +500,16 @@ Widget build(BuildContext context) {
     floatingActionButton: FloatingActionButton(
       onPressed: () {
         // Navigate to custom habit creation page
-        Navigator.pop(context, null);
-        // You would typically navigate to a form for creating a custom habit
-        // For example: Navigator.push(context, MaterialPageRoute(builder: (context) => CreateHabitPage()));
+        // Navigator.pop(context, null);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HabitFormPage()),
+        );
       },
       backgroundColor: Theme.of(context).colorScheme.secondary,
       foregroundColor: Theme.of(context).colorScheme.onSecondary,
-      child: const Icon(Icons.add),
       tooltip: 'Create custom habit',
+      child: const Icon(Icons.add),
     ),
   );
 }
@@ -493,37 +517,37 @@ Widget build(BuildContext context) {
 // Build an individual habit card
 Widget _buildHabitCard(BuildContext context, Habit habit) {
   // Convert string icon name to IconData
-  IconData iconData = Icons.bookmark;
-  try {
-    // Try to find the icon by name
-    iconData = IconData(
-      // The following retrieves the codePoint for the icon
-      // This is a simplified approach and might not work for all icons
-      Icons.book.codePoint,
-      fontFamily: 'MaterialIcons',
-    );
+  // IconData iconData = Icons.bookmark;
+  // try {
+  //   // Try to find the icon by name
+  //   iconData = IconData(
+  //     // The following retrieves the codePoint for the icon
+  //     // This is a simplified approach and might not work for all icons
+  //     Icons.book.codePoint,
+  //     fontFamily: 'MaterialIcons',
+  //   );
 
-    // This is a map of common icon names to their corresponding Icons
-    final Map<String, IconData> iconMap = {
-      'book': Icons.book,
-      'alarm': Icons.alarm,
-      'directions_run': Icons.directions_run,
-      'code': Icons.code,
-      'smoke_free': Icons.smoke_free,
-      'self_improvement': Icons.self_improvement,
-      'bookmark': Icons.bookmark,
-    };
+  //   // This is a map of common icon names to their corresponding Icons
+  //   final Map<String, IconData> iconMap = {
+  //     'book': Icons.book,
+  //     'alarm': Icons.alarm,
+  //     'directions_run': Icons.directions_run,
+  //     'code': Icons.code,
+  //     'smoke_free': Icons.smoke_free,
+  //     'self_improvement': Icons.self_improvement,
+  //     'bookmark': Icons.bookmark,
+  //   };
 
-    // Look up the icon in our map
-    if (iconMap.containsKey(habit.iconName)) {
-      iconData = iconMap[habit.iconName]!;
-    }
-  } catch (e) {
-    // Fallback to default icon if lookup fails
-    iconData = Icons.bookmark;
-  }
-
-  // Get appropriate badge icon based on habit nature
+  //   Look up the icon in our map
+  //   if (iconMap.containsKey(habit.icon)) {
+  //     iconData = iconMap[habit.icon]!;
+  //   }
+  // } catch (e) {
+  //   // Fallback to default icon if lookup fails
+  //   iconData = Icons.bookmark;
+  // }
+  IconData iconData = habit.icon;
+  // print(iconData);
   IconData badgeIcon =
       habit.nature == HabitNature.positive
           ? Icons.add_circle
@@ -558,7 +582,7 @@ Widget _buildHabitCard(BuildContext context, Habit habit) {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.white.withOpacity(0.3),
+                  // backgroundColor: Colors.white.withOpacity(0.3),
                   child: Icon(iconData, color: Colors.white),
                 ),
                 Icon(
@@ -644,10 +668,6 @@ String _getFrequencyText(Habit habit) {
   switch (habit.trackingCategory) {
     case TrackingCategory.daily:
       return 'Every day';
-    case TrackingCategory.weekly:
-      return 'Weekly';
-    case TrackingCategory.monthly:
-      return 'Monthly';
     case TrackingCategory.custom:
       // For custom, show which days are tracked
       final days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -663,7 +683,7 @@ String _getFrequencyText(Habit habit) {
   }
 }
 
-// Show a dialog with habit details
+// Show a dialog with habit details - bottom right in the widget
 void _showHabitDetails(BuildContext context, Habit habit) {
   showDialog(
     context: context,

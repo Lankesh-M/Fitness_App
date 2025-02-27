@@ -1,4 +1,3 @@
-// habit_provider.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +5,7 @@ import 'HabitModel.dart';
 
 class HabitProvider extends ChangeNotifier {
   List<Habit> _habits = [];
+  List<Habit> _deletedHabits = [];
   bool _isLoading = true;
 
   List<Habit> get habits => _habits;
@@ -16,6 +16,24 @@ class HabitProvider extends ChangeNotifier {
   }
 
   // Load habits from storage
+  // Future<void> _loadHabits() async {
+  //   _isLoading = true;
+  //   notifyListeners();
+
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final habitsJson = prefs.getStringList('habits') ?? [];
+
+  //     _habits =
+  //         habitsJson.map((json) => Habit.fromMap(jsonDecode(json))).toList();
+  //   } catch (e) {
+  //     debugPrint('Error loading habits: $e');
+  //     _habits = [];
+  //   }
+
+  //   _isLoading = false;
+  //   notifyListeners();
+  // }
   Future<void> _loadHabits() async {
     _isLoading = true;
     notifyListeners();
@@ -26,6 +44,7 @@ class HabitProvider extends ChangeNotifier {
 
       _habits =
           habitsJson.map((json) => Habit.fromMap(jsonDecode(json))).toList();
+      print("Loaded habits: $_habits"); // Debugging
     } catch (e) {
       debugPrint('Error loading habits: $e');
       _habits = [];
@@ -36,13 +55,25 @@ class HabitProvider extends ChangeNotifier {
   }
 
   // Save habits to storage
+  // Future<void> _saveHabits() async {
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final habitsJson =
+  //         _habits.map((habit) => jsonEncode(habit.toMap())).toList();
+
+  //     await prefs.setStringList('habits', habitsJson);
+  //   } catch (e) {
+  //     debugPrint('Error saving habits: $e');
+  //   }
+  // }
   Future<void> _saveHabits() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final habitsJson =
           _habits.map((habit) => jsonEncode(habit.toMap())).toList();
-
       await prefs.setStringList('habits', habitsJson);
+
+      print("Saved habits: $habitsJson"); // Debugging
     } catch (e) {
       debugPrint('Error saving habits: $e');
     }
@@ -65,11 +96,40 @@ class HabitProvider extends ChangeNotifier {
     }
   }
 
+  // // Delete a habit
+  // void deleteHabit(String id) {
+  //   _habits.removeWhere((habit) => habit.id == id);
+  //   notifyListeners();
+  //   _saveHabits();
+  // }
+
   // Delete a habit
+
   void deleteHabit(String id) {
-    _habits.removeWhere((habit) => habit.id == id);
+    final habit = _habits.firstWhere((habit) => habit.id == id);
+
+    // if (habi) {
+    _deletedHabits.add(habit); // Store deleted habit for possible restoration
+    for (int i = 0; i < _deletedHabits.length; i++) {
+      print("Item that is in here ${_deletedHabits[i].title}");
+    }
+
+    _habits.removeWhere((h) => h.id == id);
     notifyListeners();
     _saveHabits();
+    // }
+  }
+
+  // Restore the last deleted habit
+  // ToDo : Cant restore deleted habits fix it bro
+  void restoreHabit() {
+    print(" I am here please see me ${_deletedHabits.length}");
+    if (_deletedHabits.isNotEmpty) {
+      final habit = _deletedHabits.removeLast();
+      _habits.add(habit);
+      notifyListeners();
+      _saveHabits();
+    }
   }
 
   // Toggle completion status for today

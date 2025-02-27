@@ -5,10 +5,20 @@ import 'package:fitgame_app/route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// void main() {
+//   runApp(
+//     MultiProvider(
+//       providers: [ChangeNotifierProvider(create: (context) => HabitProvider())],
+//       child: MyApp(),
+//     ),
+//   );
+// }
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => HabitProvider())],
+    ChangeNotifierProvider(
+      create: (context) => HabitProvider(),
       child: MyApp(),
     ),
   );
